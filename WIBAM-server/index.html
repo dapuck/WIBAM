@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>WIBAM Web Client</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<script type="text/javascript" src="http://zeptojs.com/zepto.min.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+		var socket = io.connect(document.location.host);
+		socket.on('bell', function(uid) {
+			printToConsole("Socket Ding!");
+		});
+
+		function printToConsole (str) {
+			$('#console').append('<p>' + str + '</p>');
+		}
+
+		function ding () {
+			socket.emit('bell');
+			printToConsole("Ding!");
+		}
+	</script>
+</head>
+<body>
+	<div id="console" style="float:left; width: 50%;">
+	</div>
+	<div style="float:left;">
+		<input type="button" id="btn" value="Ding!" onclick="ding();" />
+	</div>
+</body>
+</html>
