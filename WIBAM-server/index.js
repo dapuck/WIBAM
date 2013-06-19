@@ -48,6 +48,11 @@ io.sockets.on('connection', function (socket) {
 });
 
 function httpHandler (req, res) {
+	if(config.transport !== "https") {
+		serveFile(req, res);
+		return;
+	}
+	
 	var authHeader = req.headers['authorization'] || '',
 		token = authHeader.split(/\s+/).pop() || '',
 		auth = new Buffer(token, 'base64').toString(),
@@ -66,20 +71,24 @@ function httpHandler (req, res) {
 	}
 
 	if(checkCred(username, pass)) {
-		file = (req.url.indexOf("zepto.min.js") > -1) ? "/zepto.min.js" : "/index.html";
-		fs.readFile(__dirname + file, function (err, data) {
-			if(err) {
-				res.writeHead(500);
-				return res.end("Error loading index.html");
-			}
-			res.writeHead(200);
-			res.end(data);
-		});
+		serveFile(req, res);
 	} else {
 		// username and password not recognized
 		res.writeHead(401, "Unauthorized");
 		return res.end("Unauthorized");
 	}
+}
+
+function serveFile(req, res) {
+	var file = (req.url.indexOf("zepto.min.js") > -1) ? "/zepto.min.js" : "/index.html";
+	fs.readFile(__dirname + file, function (err, data) {
+		if(err) {
+			res.writeHead(500);
+			return res.end("Error loading index.html");
+		}
+		res.writeHead(200);
+		res.end(data);
+	});
 }
 
 var _authUsers = null;
