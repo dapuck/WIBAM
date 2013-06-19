@@ -1,7 +1,28 @@
-var app = require('http').createServer(httpHandler),
-	io = require('socket.io').listen(app),
+var config = require('./config'),
 	fs = require('fs');
-app.listen(8000);
+var app;
+if(config.transport == "https") {
+	app = require("https").createServer({
+		key: fs.readFileSync(config.key),
+		cert: fs.readFileSync(config.cert)
+	},httpHandler);
+} else 
+	app = require("http").createServer(httpHandler);
+
+var io = require('socket.io').listen(app),
+	crypto = require('crypto');
+
+app.listen(config.listenOn);
+
+io.configure(function() {
+	io.set('authorization', function(handShakeData, callback) {
+		// debugger;
+		if(handShakeData.query.k == "xyz")
+			callback(null, true);
+		else 
+			callback("bad key", false);
+	});
+});
 
 var nextID = 0;
 
@@ -27,12 +48,59 @@ io.sockets.on('connection', function (socket) {
 });
 
 function httpHandler (req, res) {
-	fs.readFile(__dirname + '/index.html', function (err, data) {
-		if(err) {
-			res.writeHead(500);
-			return res.end("Error loading index.html");
+	var authHeader = req.headers['authorization'] || '',
+		token = authHeader.split(/\s+/).pop() || '',
+		auth = new Buffer(token, 'base64').toString(),
+		parts = auth.split(':'),
+		username = parts[0],
+		pass = parts[1];
+
+	// Check username and pass
+	if(!authHeader) {
+		// no authorization header was sent
+		// we should issue a challenge
+		res.writeHead(401, "Unauthorized", {
+			'WWW-Authenticate': 'Basic realm="WIBAM"'
+		});
+		return res.end("");
+	}
+
+	if(checkCred(username, pass)) {
+		file = (req.url.indexOf("zepto.min.js") > -1) ? "/zepto.min.js" : "/index.html";
+		fs.readFile(__dirname + file, function (err, data) {
+			if(err) {
+				res.writeHead(500);
+				return res.end("Error loading index.html");
+			}
+			res.writeHead(200);
+			res.end(data);
+		});
+	} else {
+		// username and password not recognized
+		res.writeHead(401, "Unauthorized");
+		return res.end("Unauthorized");
+	}
+}
+
+var _authUsers = null;
+function checkCred (username, pass) {
+	debugger;
+	if(!_authUsers) {
+		_authUsers = {};
+		// Load from config
+		var data = fs.readFileSync(config.authFile, 'ASCII'),
+			lines = data.split('\n');
+		for(var i = 0; i < lines.length; i++) {
+			var line = lines[i];
+			if(line) {
+				var pair = line.split(':');
+				_authUsers[pair[0]] = pair[1].replace('{SHA}','');
+			}
 		}
-		res.writeHead(200);
-		res.end(data);
-	});
+	}
+	if(_authUsers[username]) {
+		var shasum = crypto.createHash('sha1').update(pass).digest('base64');
+		return (_authUsers[username] == shasum);
+	} else 
+		return false;
 }
