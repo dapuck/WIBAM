@@ -1,5 +1,5 @@
-WIBAM (W2GI Internet enabled Business Acquisition Module)
-=========================================================
+WIBAM (W2GI Internet Business Acquisition Module)
+=================================================
 
 Dependencies
 ------------
@@ -12,3 +12,8 @@ Software:
 
 * Node.js
 * VLC
+
+What is it???
+-------------
+
+A bell... that is connected to the internet.
