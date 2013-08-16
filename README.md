@@ -49,6 +49,7 @@ index.js to point to the correct host, port, and audio file.)
 On the Pi, inside WIBAM-rpi/
 
 ```
+npm install vlc
 sudo node index.js
 ```
 
