@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "WIBAM-rpi",
+  "description": "",
+  "author": "Ian McCall <imccall@where2getit.com> (http://www.where2getit.com)",
+  "version": "0.0.1",
+  "dependencies": {
+    "vlc": "*",
+    "gpio": "*",
+    "socket.io-client": "*"
+  }
+}

@@ -4,11 +4,15 @@ var vlc = require('vlc')([
 	'-A', 'oss'
 ]);
 var gpio = require('gpio');
-var socket = require('socket.io-client').connect('imccallmacmini.local', { port: 8000 });
+var socketIOClient = require('socket.io-client');
+var config = require('config.json');
+//var socket = socketIOClient.connect('imccallmacmini.local', { port: 8000 });
+var socket = socketIOClient.connect(config.server.hostname, config.server.options);
 
 var mediaFile = "/home/pi/91924__benboncan__till-with-bell.wav";
 
-var media = vlc.mediaFromFile(mediaFile);
+//var media = vlc.mediaFromFile(mediaFile);
+var media = vlc.mediaFromFile(config.audio_file);
 media.parseSync();
 
 var player = vlc.mediaplayer;
