@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "name": "WIBAM-server",
+  "description: "",
+  "author": "Ian McCall <imccall@where2getit.com> (http://www.where2getit.com)",
+  "version": "0.0.1",
+  "dependencies": {
+    "socket.io": "*"
+  }
+}
