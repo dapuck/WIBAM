@@ -5,7 +5,7 @@ config.transport = "http";
 //config.key = "./server.key"
 //config.cert = "./server.crt"
 
-config.listenOn = 8000;
+config.listenOn = 4444;
 
 //config.authFile = "./passwd"
 

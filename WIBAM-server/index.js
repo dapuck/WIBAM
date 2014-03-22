@@ -1,20 +1,21 @@
-var config = require('./config'),
-  fs = require('fs');
+var config = require('./config');
+var fs = require('fs');
 var app;
 if(config.transport == "https") {
   app = require("https").createServer({
     key: fs.readFileSync(config.key),
     cert: fs.readFileSync(config.cert)
   },httpHandler);
-} else 
+} else {
   app = require("http").createServer(httpHandler);
+}
 
-var io = require('socket.io').listen(app),
-  crypto = require('crypto');
+var io = require('socket.io').listen(app);
+var crypto = require('crypto');
 
 app.listen(config.listenOn);
 
-io.configure(function() {
+/*io.configure(function() {
   io.set('authorization', function(handShakeData, callback) {
     // debugger;
     if(handShakeData.query.k == "xyz")
@@ -22,28 +23,29 @@ io.configure(function() {
     else 
       callback("bad key", false);
   });
-});
+});*/
 
 var nextID = 0;
 
 console.log("WIBAM Server Start");
 io.sockets.on('connection', function (socket) {
-  socket.set('uid', nextID++, function(){});
-  socket.get('uid', function(err, uid) {
+  //socket.set('uid', nextID++, function(){});
+  /*socket.get('uid', function(err, uid) {
     console.log("Client Connected: uid = " + uid);
-  });
+  });*/
+  console.log("Client Connected: uid = " + socket.id);
   socket.on('client config', function(config) {
-    socket.get('uid', function(err, uid) {
-      config.uid = uid;
+    //socket.get('uid', function(err, uid) {
+      config.uid = socket.id;
       console.log("Recived config from " + config.uid);
       socket.broadcast.emit('client config', JSON.stringify(config));
-    });
+    //});
   });
   socket.on('bell', function() {
-    socket.get('uid', function(err, uid) {
-      console.log("DING! from " + uid);
-      socket.broadcast.emit('bell', uid);
-    });
+    //socket.get('uid', function(err, uid) {
+      console.log("DING! from " + socket.id);
+      socket.broadcast.emit('bell', socket.id);
+    //});
   });
 });
 
@@ -110,6 +112,7 @@ function checkCred (username, pass) {
   if(_authUsers[username]) {
     var shasum = crypto.createHash('sha1').update(pass).digest('base64');
     return (_authUsers[username] == shasum);
-  } else 
+  } else {
     return false;
+  }
 }
