@@ -5,9 +5,10 @@ var vlc = require('vlc')([
 ]);
 var gpio = require('gpio');
 var socketIOClient = require('socket.io-client');
-var config = require('config.json');
+var config = require('./config.json');
 //var socket = socketIOClient.connect('imccallmacmini.local', { port: 8000 });
-var socket = socketIOClient.connect(config.server.hostname, config.server.options);
+//var socket = socketIOClient.connect(config.server.hostname, config.server.options);
+var socket = socketIOClient(config.server.url, config.server.options);
 
 var mediaFile = "/home/pi/91924__benboncan__till-with-bell.wav";
 
