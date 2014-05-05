@@ -1,9 +1,0 @@
-{
-  "server": {
-    "url": "http://imccallmacmini.local:4444?k=xyz",
-    "options": {
-      "port": 4444
-    }
-  },
-  "audio_file": "./audio/bell-ring-01.mp3"
-}

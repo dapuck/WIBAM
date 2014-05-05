@@ -5,7 +5,7 @@ config.transport = "http";
 //config.key = "./server.key"
 //config.cert = "./server.crt"
 
-config.listenOn = 4444;
+config.listenOn = process.env.OPENSHIFT_NODEJS_PORT || 4444;
 
 //config.authFile = "./passwd"
 

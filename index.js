@@ -29,23 +29,16 @@ var nextID = 0;
 
 console.log("WIBAM Server Start");
 io.sockets.on('connection', function (socket) {
-  //socket.set('uid', nextID++, function(){});
-  /*socket.get('uid', function(err, uid) {
-    console.log("Client Connected: uid = " + uid);
-  });*/
   console.log("Client Connected: uid = " + socket.id);
-  socket.on('client config', function(config) {
-    //socket.get('uid', function(err, uid) {
-      config.uid = socket.id;
-      console.log("Recived config from " + config.uid);
-      socket.broadcast.emit('client config', JSON.stringify(config));
-    //});
+  socket.on('client_config', function(config) {
+    config.uid = socket.id;
+    console.log("Recived config from " + config.uid);
+    socket.broadcast.emit('client_config', JSON.stringify(config));
   });
-  socket.on('bell', function() {
-    //socket.get('uid', function(err, uid) {
-      console.log("DING! from " + socket.id);
-      socket.broadcast.emit('bell', socket.id);
-    //});
+  socket.on('bell', function(message) {
+    //console.log("DING! from " + socket.id);
+    console.log(message);
+    socket.broadcast.emit('bell', message);
   });
 });
 
